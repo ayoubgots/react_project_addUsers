@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classes from "./AddUser.module.css";
 import Card from "../UI/Card";
 import Button from "../UI/Button";
@@ -9,7 +9,6 @@ const AddUser = (props) => {
   const [enteredName, setEnteredName] = useState("");
   const [enteredAge, setEnteredAge] = useState("");
   const [error, setError] = useState();
-  // const [isValid,setIsValid] = useState(true);
 
   const onNameHandler = (e) => {
     setEnteredName(e.target.value);
@@ -41,19 +40,36 @@ const AddUser = (props) => {
     };
     props.onAddUser(user);
 
-
+ 
     //to reset the fields in the form
     setEnteredAge("");
     setEnteredName("");
   };
+  const clearBtnHandler = () =>{
+      props.clearList([])
+  }
 
-
-  const onCloseError =()=>{
+  const onCloseError =(e)=>{
+    e.preventDefault();
     setError(null);
   }
+
+  useEffect(()=>{
+    const indentifier = setTimeout(()=>{
+      console.log('time pased')
+    },500)
+    return () =>{
+      console.log("clean up")
+      clearTimeout(indentifier)
+    }
+  },[enteredName,enteredAge])
+
+
+
+
   return (
     <Wrapper>
-      {error && <ErrorModal errorHandler = {onCloseError} e = {error}></ErrorModal>}
+      {error && <ErrorModal errorHandler = {onCloseError} e = {error} />}
     <Card className={`${classes.input} ${classes.isValid ? `classes.isvalid`: ""}`}>
       <form onSubmit={AddUserHandler}>
         <div className="container">
@@ -68,6 +84,7 @@ const AddUser = (props) => {
           <div className="control_actions">
             {/* <button type="submit">submit</button> */}
             <Button type="submit"> submit</Button>
+            <Button type="reset" onClick={clearBtnHandler}> clear</Button>
           </div>
         </div>
       </form>
