@@ -2,9 +2,13 @@ import { useState } from "react";
 import classes from "./AddUser.module.css";
 import Card from "../UI/Card";
 import Button from "../UI/Button";
+import ErrorModal from "../UI/ErrorModal";
+import Wrapper from "../helpers/wrapper";
+
 const AddUser = (props) => {
   const [enteredName, setEnteredName] = useState("");
   const [enteredAge, setEnteredAge] = useState("");
+  const [error, setError] = useState();
   // const [isValid,setIsValid] = useState(true);
 
   const onNameHandler = (e) => {
@@ -15,11 +19,19 @@ const AddUser = (props) => {
   };
   const AddUserHandler = (e) => {
     e.preventDefault();
-    if(enteredAge.trim().length === 0 || enteredName.trim().length === 0){
+    if(enteredName.trim().length === 0  || enteredAge.trim().length === 0  ){
+      setError({
+        title : "Invalid Inputs !!!",
+        message : "Please enter a valid name of age (non-empty values)"
+      })
       return ;
         }
-    if(+enteredAge<1){
-      return ;
+    if(+enteredAge<0){
+      setError({
+        title : "Negative Age !!!",
+        message : "Please enter a Positive Age "
+      })
+      return;
     }
 
     const user = {
@@ -34,7 +46,14 @@ const AddUser = (props) => {
     setEnteredAge("");
     setEnteredName("");
   };
+
+
+  const onCloseError =()=>{
+    setError(null);
+  }
   return (
+    <Wrapper>
+      {error && <ErrorModal errorHandler = {onCloseError} e = {error}></ErrorModal>}
     <Card className={`${classes.input} ${classes.isValid ? `classes.isvalid`: ""}`}>
       <form onSubmit={AddUserHandler}>
         <div className="container">
@@ -53,6 +72,7 @@ const AddUser = (props) => {
         </div>
       </form>
     </Card>
+    </Wrapper>
   );
 };
 
